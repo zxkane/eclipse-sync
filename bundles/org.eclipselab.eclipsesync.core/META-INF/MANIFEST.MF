@@ -4,3 +4,14 @@ Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.eclipselab.eclipsesync.core;singleton:=true
 Bundle-Version: 0.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.eclipselab.eclipsesync.core.internal.Activator
+Require-Bundle: org.eclipse.core.runtime
+Import-Package: org.eclipse.equinox.p2.core;version="2.0.0",
+ org.eclipse.equinox.p2.engine;version="2.0.0",
+ org.eclipse.equinox.p2.engine.query;version="2.0.0",
+ org.eclipse.equinox.p2.engine.spi;version="2.0.0",
+ org.eclipse.equinox.p2.metadata;version="2.1.0",
+ org.eclipse.equinox.p2.query;version="2.0.0"
+Export-Package: org.eclipselab.eclipsesync.core.p2;x-friends:="org.eclipselab.eclipsesync.tests"
+Bundle-ClassPath: .

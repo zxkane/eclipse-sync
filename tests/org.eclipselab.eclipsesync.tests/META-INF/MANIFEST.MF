@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: org.eclipselab.eclipsesync.tests;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipselab.eclipsesync.core;bundle-version="0.1.0",
+ org.junit;bundle-version="4.8.2",
+ org.eclipse.core.runtime,
+ org.eclipse.equinox.p2.core;bundle-version="2.1.0",
+ org.eclipse.equinox.p2.engine;bundle-version="2.1.0",
+ org.eclipse.equinox.p2.metadata;bundle-version="2.1.0"
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.eclipselab.eclipsesync.tests.Activator
+Bundle-ClassPath: .
