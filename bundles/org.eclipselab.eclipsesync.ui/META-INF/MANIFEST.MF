@@ -4,3 +4,7 @@ Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.eclipselab.eclipsesync.ui;singleton:=true
 Bundle-Version: 0.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.eclipselab.eclipsesync.ui.preferences.Activator
