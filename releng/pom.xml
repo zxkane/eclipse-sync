@@ -9,25 +9,45 @@
 	<properties>
 		<tycho-version>0.13.0</tycho-version>
 		<eclipse-sync-version>0.1.0</eclipse-sync-version>
+		<indigo-p2-repository>
+			http://download.eclipse.org/releases/indigo
+		</indigo-p2-repository>
+		<indigo-p2-repository-update>
+			http://download.eclipse.org/eclipse/updates/3.7
+		</indigo-p2-repository-update>
 	</properties>
 	<repositories>
 		<repository>
 			<id>indigo</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/indigo</url>
+			<url>${indigo-p2-repository}</url>
 		</repository>
 		<repository>
 			<id>indigo updates</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/3.7</url>
+			<url>${indigo-p2-repository-update}</url>
 		</repository>
 	</repositories>
-	
+
+	<profiles>
+		<profile>
+			<id>internal</id>
+			<properties>
+				<indigo-p2-repository>
+					http://193.81.18.250:8080/job/IndigoMirror/5/artifact/repo/
+				</indigo-p2-repository>
+				<indigo-p2-repository-update>
+					http://193.81.18.250:8080/job/IndigoMirror/5/artifact/repo/
+				</indigo-p2-repository-update>
+			</properties>
+		</profile>
+	</profiles>
+
 	<modules>
 		<module>../bundles/org.eclipselab.eclipsesync.core</module>
 		<module>../bundles/org.eclipselab.eclipsesync.ui</module>
-		<module>../tests/org.eclipselab.eclipsesync.tests</module>		
-	</modules>	
+		<module>../tests/org.eclipselab.eclipsesync.tests</module>
+	</modules>
 
 	<build>
 		<plugins>
