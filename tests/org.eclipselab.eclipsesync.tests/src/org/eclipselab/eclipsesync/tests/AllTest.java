@@ -7,12 +7,14 @@
  */
 package org.eclipselab.eclipsesync.tests;
 
+import org.eclipselab.eclipsesync.tests.p2.FileStorageTest;
 import org.eclipselab.eclipsesync.tests.p2.P2HelperTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({P2HelperTests.class})
+@Suite.SuiteClasses({P2HelperTests.class,
+	FileStorageTest.class})
 public class AllTest {
 	//
 }

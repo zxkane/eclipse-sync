@@ -19,4 +19,14 @@ public interface ISyncStorage {
 	 * @return the description of storage service.
 	 */
 	public String getDescription();
+
+	/**
+	 * Get the <code>IStorageNode</code> instance for given id and parent node
+	 * @param nodeId the specified node id
+	 * @param parent the parent node, or <code>null</code> for default parent
+	 * @return the specified node or <code>null</code> if the given node doesn't exist
+	 */
+	public IStorageNode getNode(String nodeId, IStorageNode parent) throws StorageException;
+
+	public IStorageNode createNode(String nodeId, IStorageNode parent) throws StorageException;
 }
