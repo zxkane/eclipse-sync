@@ -29,6 +29,9 @@
 					</dependencies>
 					<testsuite>org.eclipselab.eclipsesync.tests</testsuite>
 					<testclass>org.eclipselab.eclipsesync.tests.AllTest</testclass>
+					<includes>
+						<include>**/AllTest.java</include>
+					</includes>
 					<argline>-Dcom.sun.management.jmxremote</argline>
 					<appargline>-consoleLog</appargline>
 					<bundlestartlevel>
