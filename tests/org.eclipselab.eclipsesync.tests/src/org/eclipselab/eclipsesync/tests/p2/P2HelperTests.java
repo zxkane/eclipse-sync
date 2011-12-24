@@ -16,7 +16,7 @@ import java.io.File;
 import org.eclipse.equinox.internal.p2.engine.SimpleProfileRegistry;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
-import org.eclipselab.eclipsesync.core.p2.P2Helper;
+import org.eclipselab.eclipsesync.p2.utils.P2Helper;
 import org.eclipselab.eclipsesync.tests.AbstractProvisioningTest;
 import org.junit.Test;
 

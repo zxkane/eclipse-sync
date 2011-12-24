@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: org.eclipselab.eclipsesync.p2;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.eclipse.equinox.p2.core;version="2.0.0",
+ org.eclipse.equinox.p2.engine;version="2.0.0",
+ org.eclipse.equinox.p2.engine.query;version="2.0.0",
+ org.eclipse.equinox.p2.engine.spi;version="2.0.0",
+ org.eclipse.equinox.p2.metadata;version="2.1.0",
+ org.eclipse.equinox.p2.query;version="2.0.0",
+ org.eclipselab.eclipsesync.core;version="1.0.0"
+Export-Package: org.eclipselab.eclipsesync.p2.utils;x-friends:="org.eclipselab.eclipsesync.tests"
+Require-Bundle: org.eclipse.core.runtime

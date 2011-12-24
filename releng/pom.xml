@@ -45,6 +45,7 @@
 
 	<modules>
 		<module>../bundles/org.eclipselab.eclipsesync.core</module>
+		<module>../bundles/org.eclipselab.eclipsesync.p2</module>
 		<module>../bundles/org.eclipselab.eclipsesync.ui</module>
 		<module>../tests/org.eclipselab.eclipsesync.tests</module>
 	</modules>

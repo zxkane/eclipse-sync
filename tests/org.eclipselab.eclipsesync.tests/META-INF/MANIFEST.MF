@@ -9,7 +9,8 @@ Require-Bundle: org.eclipselab.eclipsesync.core;bundle-version="0.1.0",
  org.eclipse.core.runtime,
  org.eclipse.equinox.p2.core;bundle-version="2.1.0",
  org.eclipse.equinox.p2.engine;bundle-version="2.1.0",
- org.eclipse.equinox.p2.metadata;bundle-version="2.1.0"
+ org.eclipse.equinox.p2.metadata;bundle-version="2.1.0",
+ org.eclipselab.eclipsesync.p2;bundle-version="0.1.0"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipselab.eclipsesync.tests.Activator
 Bundle-ClassPath: .
