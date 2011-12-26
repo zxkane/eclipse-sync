@@ -7,12 +7,14 @@
  */
 package org.eclipselab.eclipsesync.p2.utils;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.query.UserVisibleRootQuery;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
 
-public class P2Helper {
-	public IInstallableUnit[] getAllInstalledIUs(IProfile profile) {
-		return profile.query(new UserVisibleRootQuery(), null).toArray(IInstallableUnit.class);
+public final class P2Helper {
+
+	public static IInstallableUnit[] getAllInstalledIUs(IProfile profile, IProgressMonitor monitor) {
+		return profile.query(new UserVisibleRootQuery(), monitor).toArray(IInstallableUnit.class);
 	}
 }

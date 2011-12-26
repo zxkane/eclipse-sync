@@ -34,7 +34,7 @@ public class P2HelperTests extends AbstractProvisioningTest{
 		IProfile profile = registry.getProfile("SDKProfile"); //$NON-NLS-1$
 		assertNotNull("fail to load profile.", profile); //$NON-NLS-1$
 
-		IInstallableUnit[] ius = new P2Helper().getAllInstalledIUs(profile);
+		IInstallableUnit[] ius = P2Helper.getAllInstalledIUs(profile, null);
 		assertEquals("Not find expected ius.", 8, ius.length); //$NON-NLS-1$
 	}
 }

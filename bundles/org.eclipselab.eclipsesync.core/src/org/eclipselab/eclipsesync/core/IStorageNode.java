@@ -12,7 +12,7 @@ import java.io.OutputStream;
 
 public interface IStorageNode {
 	/**
-	 * Load specified configuration file.
+	 * Load specified configuration file
 	 * @param configName the given configuration name
 	 * @return
 	 * @throws StorageException the given configuration is not found
@@ -24,4 +24,9 @@ public interface IStorageNode {
 	 * @return
 	 */
 	public OutputStream getStore(String configName) throws StorageException;
+	/**
+	 * List the configurations
+	 * @return	the name of existing configurations
+	 */
+	public String[] listConfigs();
 }

@@ -7,10 +7,13 @@
  */
 package org.eclipselab.eclipsesync.core;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+
 public interface ISyncTask {
 	public String getName();
 
 	public String getDescription();
 
-	public void perform(ISyncStorage storage);
+	public IStatus perform(ISyncStorage storage, IProgressMonitor monitor);
 }

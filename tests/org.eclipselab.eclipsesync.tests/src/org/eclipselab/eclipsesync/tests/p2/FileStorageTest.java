@@ -7,14 +7,17 @@
  */
 package org.eclipselab.eclipsesync.tests.p2;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipselab.eclipsesync.core.IStorageNode;
 import org.eclipselab.eclipsesync.core.StorageException;
 import org.eclipselab.eclipsesync.core.internal.FileStorage;
@@ -83,6 +86,97 @@ public class FileStorageTest extends AbstractTest{
 			public OutputStream getStore(String configName) throws StorageException {
 				return null;
 			}
+
+			public String[] listConfigs() {
+				return null;
+			}
 		});
+	}
+
+	@Test public void getStore() throws StorageException, IOException {
+		FileStorage storage = new FileStorage();
+		storage.setStorageLocation(storageLocation);
+		final String nodeid = "nodeid"; //$NON-NLS-1$
+		IStorageNode node = storage.createNode(nodeid, null);
+		assertNotNull("0.5", node); //$NON-NLS-1$
+		final String configName = "configid"; //$NON-NLS-1$
+		OutputStream output = node.getStore(configName); 
+		assertNotNull("0.6", output); //$NON-NLS-1$
+		final String content = "test"; //$NON-NLS-1$
+		output.write(new String(content).getBytes()); 
+		output.close();
+		File outputFile = new File(new File(storageLocation, nodeid), configName);
+		assertTrue("0.8", outputFile.exists()); //$NON-NLS-1$
+		assertEquals("0.9", 4, outputFile.length()); //$NON-NLS-1$
+	}
+
+	@Test(expected=StorageException.class) public void getStoreWithIllegalCharaters() throws IOException, StorageException {
+		FileStorage storage = new FileStorage();
+		storage.setStorageLocation(storageLocation);
+		final String nodeid = "nodeid"; //$NON-NLS-1$
+		IStorageNode node = null;
+		try {
+			node = storage.createNode(nodeid, null);
+		} catch (StorageException e) {
+			fail("0.4", e); //$NON-NLS-1$
+		}
+		assertNotNull("0.5", node); //$NON-NLS-1$
+		if (node != null) {
+			final String configName = "configid"; //$NON-NLS-1$
+			String invalidChars;
+			if (Platform.OS_WIN32.equals(Platform.getOS())) {
+				invalidChars = "\\/:*?\"<>|"; //$NON-NLS-1$
+			} else if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+				invalidChars = "/:"; //$NON-NLS-1$
+			} else { // assume Unix/Linux
+				invalidChars = "/"; //$NON-NLS-1$
+			}
+			OutputStream output = node.getStore(configName + invalidChars + configName); 
+			output.close();
+		}
+	}	
+
+	@Test public void testNodeList() throws IOException, StorageException {		
+		FileStorage storage = new FileStorage();
+		storage.setStorageLocation(storageLocation);
+		final String nodeid = "nodeid"; //$NON-NLS-1$
+		File nodeFile = new File(storageLocation, nodeid);
+		assertTrue("0.2", nodeFile.mkdirs()); //$NON-NLS-1$
+		final String configName = "configid"; //$NON-NLS-1$
+		File configStoreFile = new File(nodeFile, configName);
+		assertTrue("0.3", configStoreFile.createNewFile()); //$NON-NLS-1$
+		IStorageNode node = storage.getNode(nodeid, null);
+		assertNotNull("0.5", node); //$NON-NLS-1$
+		String[] configs = node.listConfigs();
+		assertEquals("0.7", 1, configs.length); //$NON-NLS-1$
+		assertEquals("0.9", configName, configs[0]); //$NON-NLS-1$
+	}
+
+	@Test(expected=StorageException.class) public void loadConfig() throws IOException, StorageException {
+		FileStorage storage = new FileStorage();
+		storage.setStorageLocation(storageLocation);
+		final String nodeid = "nodeid"; //$NON-NLS-1$
+		File nodeFile = new File(storageLocation, nodeid);
+		assertTrue("0.2", nodeFile.mkdirs()); //$NON-NLS-1$
+		final String configName = "configid"; //$NON-NLS-1$
+		File configStoreFile = new File(nodeFile, configName);
+		assertTrue("0.3", configStoreFile.createNewFile()); //$NON-NLS-1$
+		IStorageNode node = null;
+		try {
+			node = storage.getNode(nodeid, null);
+			assertNotNull("0.5", node); //$NON-NLS-1$
+		} catch (StorageException e) {
+			fail("0.4", e); //$NON-NLS-1$
+		}
+		if (node != null) {
+			try {
+				InputStream input = node.load(configName);
+				input.close();
+			} catch (StorageException e) {
+				assertNotNull("0.6", node); //$NON-NLS-1$
+			}
+			InputStream input = node.load("noexisting"); //$NON-NLS-1$
+			input.close();
+		}
 	}
 }
