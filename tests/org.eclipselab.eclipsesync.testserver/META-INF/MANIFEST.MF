@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: org.eclipselab.eclipsesync.testserver;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.eclipselab.eclipsesync.testserver.Activator
+Require-Bundle: javax.servlet;bundle-version="2.5.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.eclipse.equinox.http,
+ org.osgi.framework;version="1.6.0",
+ org.osgi.service.http;version="1.2.1",
+ org.osgi.util.tracker;version="1.5.0"

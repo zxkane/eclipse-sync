@@ -13,6 +13,8 @@ Import-Package: org.eclipse.equinox.internal.p2.core.helpers,
  org.eclipse.equinox.p2.metadata;version="2.1.0",
  org.eclipse.equinox.p2.query;version="2.0.0",
  org.eclipselab.eclipsesync.core;version="1.0.0"
-Export-Package: org.eclipselab.eclipsesync.p2.utils;x-friends:="org.eclipselab.eclipsesync.tests"
+Export-Package: org.eclipselab.eclipsesync.p2.internal;x-friends:="org.eclipselab.eclipsesync.tests",
+ org.eclipselab.eclipsesync.p2.utils;x-friends:="org.eclipselab.eclipsesync.tests"
 Require-Bundle: org.eclipse.core.runtime
 Service-Component: OSGI-INF/p2sync.xml
+Bundle-ActivationPolicy: lazy

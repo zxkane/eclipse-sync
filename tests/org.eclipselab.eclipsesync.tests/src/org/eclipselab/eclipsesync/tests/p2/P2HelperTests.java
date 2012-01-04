@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Eclipselab Eclipse Sync and others.
+ * Copyright (c) 2011, 2012 Eclipselab Eclipse Sync and others.
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,6 @@ import org.eclipse.equinox.internal.p2.engine.SimpleProfileRegistry;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
 import org.eclipselab.eclipsesync.p2.utils.P2Helper;
-import org.eclipselab.eclipsesync.tests.AbstractProvisioningTest;
 import org.junit.Test;
 
 public class P2HelperTests extends AbstractProvisioningTest{

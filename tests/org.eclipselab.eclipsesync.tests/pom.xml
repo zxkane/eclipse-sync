@@ -9,6 +9,12 @@
 		<version>0.1.0-SNAPSHOT</version>
 		<relativePath>../../releng</relativePath>
 	</parent>
+	
+	<properties>
+		<testSuiteName>org.eclipselab.eclipsesync.tests</testSuiteName>
+		<testClassName>org.eclipselab.eclipsesync.tests.AllTest</testClassName>
+	</properties>
+		
 	<groupId>org.eclipselab</groupId>
 	<artifactId>org.eclipselab.eclipsesync.tests</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
@@ -26,14 +32,19 @@
 							<artifactId>org.eclipse.equinox.ds</artifactId>
 							<type>eclipse-plugin</type>
 						</dependency>
+						<dependency>
+							<artifactId>org.eclipselab.eclipsesync.testserver</artifactId>
+							<type>eclipse-plugin</type>
+						</dependency>
+						<dependency>
+							<artifactId>org.eclipse.equinox.p2.transport.ecf</artifactId>
+							<type>eclipse-plugin</type>
+						</dependency>											
 					</dependencies>
-					<testsuite>org.eclipselab.eclipsesync.tests</testsuite>
-					<testclass>org.eclipselab.eclipsesync.tests.AllTest</testclass>
-					<includes>
-						<include>**/AllTest.java</include>
-					</includes>
-					<argline>-Dcom.sun.management.jmxremote</argline>
-					<appargline>-consoleLog</appargline>
+					<testSuite>${testSuiteName}</testSuite>
+					<testClass>${testClassName}</testClass>
+					<argLine>-Declipse.p2.profile=Test -Dcom.sun.management.jmxremote</argLine>
+					<appArgLine>-consoleLog</appArgLine>
 					<bundlestartlevel>
 						<bundle>
 							<id>org.eclipse.equinox.ds</id>

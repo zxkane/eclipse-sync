@@ -6,4 +6,5 @@
    </service>
    <reference bind="bindImportExportService" cardinality="1..1" interface="org.eclipse.equinox.internal.p2.importexport.P2ImportExport" name="P2ImportExport" policy="dynamic" unbind="unbindImportExportService"/>
    <reference bind="bindAgent" cardinality="1..1" interface="org.eclipse.equinox.p2.core.IProvisioningAgent" name="IProvisioningAgent" policy="static"/>
+   <property name="type" type="String" value="p2"/>
 </scr:component>
