@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?p2f version='1.0.0'?>
+<p2f version='1.0.0'>
+  <ius size='1'>
+    <iu id='iu.feature1' name='Feature1' version='1.0.0.I20110127-2034'>
+      <repositories size='1'>
+        <repository location='http://localhost:50349/repo1/'/>
+      </repositories>
+    </iu>
+  </ius>
+</p2f>

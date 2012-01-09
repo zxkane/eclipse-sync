@@ -1,6 +1,6 @@
 /bin
 /target
-/testData/p2/org.eclipse.equinox.p2.engine/profileRegistry/Test.profile/.data
-/testData/p2/org.eclipse.equinox.p2.engine/profileRegistry/Test.profile/.lock
-/testData/p2/org.eclipse.equinox.p2.repository
-/testData/p2/org.eclipse.equinox.p2.engine/profileRegistry/Test.profile/*.profile.gz
+/testData/p2/**/org.eclipse.equinox.p2.engine/profileRegistry/Test.profile/.data
+/testData/p2/**/org.eclipse.equinox.p2.engine/profileRegistry/Test.profile/.lock
+/testData/p2/**/org.eclipse.equinox.p2.repository
+/testData/p2/profile-feature1/org.eclipse.equinox.p2.engine/profileRegistry/Test.profile/*.profile.gz
