@@ -6,4 +6,5 @@
    </service>
    <property name="name" type="String" value="File System Storage"/>
    <property name="description" type="String" value="File System Storage Implementation"/>
+   <property name="id" type="String" value="filesystem"/>
 </scr:component>

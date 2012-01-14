@@ -16,10 +16,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	@Override
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		store.setDefault(PreferenceConstants.P_BOOLEAN, true);
-		store.setDefault(PreferenceConstants.P_CHOICE, Messages.PreferencePage_TurnOnValue);
-		store.setDefault(PreferenceConstants.P_STRING,
-				"Default value"); //$NON-NLS-1$
+		store.setDefault(PreferenceConstants.OnOff, true);
+		store.setDefault(PreferenceConstants.Storage, MainPreferencePage.FileStorageId);
 	}
 
 }

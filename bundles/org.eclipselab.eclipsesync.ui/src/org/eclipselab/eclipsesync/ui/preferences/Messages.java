@@ -11,13 +11,15 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipselab.eclipsesync.ui.preferences.messages"; //$NON-NLS-1$
+	public static String MainPreferencePage_ButtonSyncNow;
+	public static String MainPreferencePage_GroupStorage;
 	public static String PreferencePage_BooleanPref;
 	public static String PreferencePage_TurnOn;
 	public static String PreferencePage_TurnOnValue;
 	public static String PreferencePage_TurnOff;
 	public static String PreferencePage_TurnOffValue;
 	public static String PreferencePage_Description;
-	public static String PreferencePage_Directory;
+	public static String PreferencePage_ChooseDirectory;
 	public static String PreferencePage_SwitchGroup;
 	public static String PreferencePage_TextPref;
 	static {

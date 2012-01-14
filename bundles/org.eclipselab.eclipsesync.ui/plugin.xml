@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="org.eclipselab.eclipsesync.ui.preferences.SamplePreferencePage"
+            class="org.eclipselab.eclipsesync.ui.preferences.MainPreferencePage"
             id="org.eclipselab.eclipsesync.ui.preferences.SamplePreferencePage"
             name="%pref.sync.name">
       </page>

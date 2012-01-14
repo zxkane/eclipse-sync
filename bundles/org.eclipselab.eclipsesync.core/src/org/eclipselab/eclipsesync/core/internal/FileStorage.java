@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Eclipselab Eclipse Sync and others.
+ * Copyright (c) 2011, 2012 Eclipselab Eclipse Sync and others.
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,12 +19,11 @@ public class FileStorage implements ISyncStorage {
 	private File location;
 
 	public String getName() {
-		return "file"; //$NON-NLS-1$
+		return Messages.FileStorage_StorageName;
 	}
 
 	public String getDescription() {
-		//TODO
-		return null;
+		return Messages.FileStorage_StorageDescription;
 	}
 
 	public IStorageNode getNode(String nodeId, IStorageNode parent)
