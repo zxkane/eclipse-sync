@@ -49,6 +49,7 @@
 		<module>../bundles/org.eclipselab.eclipsesync.ui</module>
 		<module>../tests/org.eclipselab.eclipsesync.testserver</module>
 		<module>../tests/org.eclipselab.eclipsesync.tests</module>
+		<module>../features/org.eclipselab.eclipsesync.feature</module>
 	</modules>
 
 	<build>

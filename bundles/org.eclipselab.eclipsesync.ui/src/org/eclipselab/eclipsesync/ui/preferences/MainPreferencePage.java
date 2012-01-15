@@ -1,6 +1,7 @@
 package org.eclipselab.eclipsesync.ui.preferences;
 
-import java.util.Collection;
+import java.io.File;
+import java.util.Map;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.JFaceResources;
@@ -12,15 +13,15 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipselab.eclipsesync.core.ISyncService;
 import org.eclipselab.eclipsesync.core.ISyncStorage;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
+import org.eclipselab.eclipsesync.core.internal.FileStorage;
 
 public class MainPreferencePage extends PreferencePage implements IWorkbenchPreferencePage{
 
@@ -30,7 +31,7 @@ public class MainPreferencePage extends PreferencePage implements IWorkbenchPref
 	boolean syncOnOff;
 	Button switchOnOff;
 	Group group;
-	private Text directoryText;
+	Text directoryText;
 	private Button[] storageButtons;
 
 	public MainPreferencePage() {
@@ -63,72 +64,86 @@ public class MainPreferencePage extends PreferencePage implements IWorkbenchPref
 		layout.numColumns = 1;
 		radioBox.setLayout(layout);
 
-		final BundleContext bundleContext = Activator.getDefault().getBundle()
-				.getBundleContext();
-		try {
-			Collection<ServiceReference<ISyncStorage>> storages = bundleContext
-					.getServiceReferences(ISyncStorage.class, null);
+		final ISyncService syncService = Activator.getDefault().getService(ISyncService.class);
+		Map<String, ISyncStorage> storages = syncService.getStorages();
 
-			int i = 0;
-			storageButtons = new Button[storages.size()];
-			for (ServiceReference<ISyncStorage> storageRef : storages) {
-				ISyncStorage storage = bundleContext.getService(storageRef);
-				final String propertyId = (String) storageRef.getProperty("id"); //$NON-NLS-1$
-				final Button radio = new Button(radioBox, SWT.RADIO | SWT.LEFT);
-				storageButtons[i++] = radio;
-				radio.setText(storage.getName());
-				radio.setToolTipText(storage.getDescription());
-				radio.setFont(getFont());
-				radio.setData(propertyId);
-				radio.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent event) {
-						storageValue = (String) event.widget.getData();
-					}
-				});
-
-				if (FileStorageId.equals(propertyId)) { 
-					final Composite direcotryComp = new Composite(radioBox, SWT.NONE);
-					griddata = new GridData(GridData.FILL_HORIZONTAL);
-					direcotryComp.setLayoutData(griddata);
-					layout = new GridLayout();
-					layout.horizontalSpacing = 8;
-					layout.numColumns = 3;
-					direcotryComp.setLayout(layout);
-					Label directoryLabel = new Label(direcotryComp, SWT.NONE);
-					directoryLabel.setText(Messages.PreferencePage_ChooseDirectory);
-					griddata = new GridData(GridData.FILL_HORIZONTAL);
-					directoryText = new Text(direcotryComp, SWT.BORDER);
-					directoryText.setLayoutData(griddata);
-					fileStoragePath = getPreferenceStore().getString(PreferenceConstants.FileStoragePath);
-					directoryText.setText(fileStoragePath);
-					Button directoryChoose = new Button(direcotryComp, SWT.PUSH);
-					directoryChoose.setText(JFaceResources.getString("openBrowse")); //$NON-NLS-1$
-				}
-				bundleContext.ungetService(storageRef);
-			}
-			switchOnOff.addSelectionListener(new SelectionAdapter() {
+		int i = 0;
+		storageButtons = new Button[storages.size()];
+		for (String propertyId : storages.keySet()) {
+			ISyncStorage storage = storages.get(propertyId);
+			final Button radio = new Button(radioBox, SWT.RADIO | SWT.LEFT);
+			storageButtons[i++] = radio;
+			radio.setText(storage.getName());
+			radio.setToolTipText(storage.getDescription());
+			radio.setFont(getFont());
+			radio.setData(propertyId);
+			radio.addSelectionListener(new SelectionAdapter() {
 				@Override
-				public void widgetSelected(SelectionEvent e) {
-					syncOnOff = switchOnOff.getSelection();
-					recursiveSetEnabled(group, syncOnOff);
+				public void widgetSelected(SelectionEvent event) {
+					storageValue = (String) event.widget.getData();
 				}
 			});
 
-			String defaultStorageId = getPreferenceStore().getString(PreferenceConstants.Storage);
-			storageValue = defaultStorageId;
-			updateStorageButtons();
-			syncOnOff = getPreferenceStore().getBoolean(PreferenceConstants.OnOff);
-			if (syncOnOff) {
-				switchOnOff.setSelection(true);
-			} else
-				recursiveSetEnabled(group, false);
-			final Button syncNow = new Button(composite, SWT.PUSH);
-			syncNow.setText(Messages.MainPreferencePage_ButtonSyncNow);
-		} catch (InvalidSyntaxException e) {
-			// won't happen
-
+			if (FileStorageId.equals(propertyId)) { 
+				final Composite direcotryComp = new Composite(radioBox, SWT.NONE);
+				griddata = new GridData(GridData.FILL_HORIZONTAL);
+				direcotryComp.setLayoutData(griddata);
+				layout = new GridLayout();
+				layout.horizontalSpacing = 8;
+				layout.numColumns = 3;
+				direcotryComp.setLayout(layout);
+				Label directoryLabel = new Label(direcotryComp, SWT.NONE);
+				directoryLabel.setText(Messages.PreferencePage_ChooseDirectory);
+				griddata = new GridData(GridData.FILL_HORIZONTAL);
+				directoryText = new Text(direcotryComp, SWT.BORDER);
+				directoryText.setLayoutData(griddata);
+				fileStoragePath = getPreferenceStore().getString(PreferenceConstants.FileStoragePath);
+				directoryText.setText(fileStoragePath);
+				if (!fileStoragePath.equals("")) { //$NON-NLS-1$
+					((FileStorage) storage).setStorageLocation(new File(fileStoragePath));
+				}
+				Button directoryChoose = new Button(direcotryComp, SWT.PUSH);
+				directoryChoose.setText(JFaceResources.getString("openBrowse")); //$NON-NLS-1$
+				directoryChoose.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						DirectoryDialog directoryDialog = new DirectoryDialog(getShell());
+						if (!fileStoragePath.equals("")) //$NON-NLS-1$
+							directoryDialog.setFilterPath(fileStoragePath);
+						String userChosen = directoryDialog.open();
+						if (userChosen != null) {
+							directoryText.setText(userChosen);
+						}
+					}
+				});
+			}
 		}
+		switchOnOff.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				syncOnOff = switchOnOff.getSelection();
+				recursiveSetEnabled(group, syncOnOff);
+			}
+		});
+
+		String defaultStorageId = getPreferenceStore().getString(PreferenceConstants.Storage);
+		storageValue = defaultStorageId;
+		updateStorageButtons();
+		syncService.setStorage(storages.get(storageValue));
+
+		syncOnOff = getPreferenceStore().getBoolean(PreferenceConstants.OnOff);
+		if (syncOnOff) {
+			switchOnOff.setSelection(true);
+		} else
+			recursiveSetEnabled(group, false);
+		final Button syncNow = new Button(composite, SWT.PUSH);
+		syncNow.setText(Messages.MainPreferencePage_ButtonSyncNow);
+		syncNow.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				syncService.schedule(0);
+			}
+		});
 		return composite;
 	}
 
@@ -139,6 +154,18 @@ public class MainPreferencePage extends PreferencePage implements IWorkbenchPref
 				break;
 			}
 		}
+	}
+
+	private void updateSyncService() {
+		ISyncService syncService = Activator.getDefault().getService(ISyncService.class);
+		if (syncOnOff) {
+			ISyncStorage storage = syncService.getStorages().get(storageValue);
+			if (storage instanceof FileStorage) {
+				((FileStorage) storage).setStorageLocation(new File(getPreferenceStore().getString(PreferenceConstants.FileStoragePath)));
+			}
+			syncService.setStorage(storage);
+		} else
+			syncService.stop();
 	}
 
 	public void recursiveSetEnabled(Control control, boolean enabled) {
@@ -158,9 +185,12 @@ public class MainPreferencePage extends PreferencePage implements IWorkbenchPref
 
 	@Override
 	public boolean performOk() {
+		syncOnOff = switchOnOff.getSelection();
 		getPreferenceStore().setValue(PreferenceConstants.OnOff, syncOnOff);
 		getPreferenceStore().setValue(PreferenceConstants.Storage, storageValue);
+		fileStoragePath = directoryText.getText().trim();
 		getPreferenceStore().setValue(PreferenceConstants.FileStoragePath, fileStoragePath);
+		updateSyncService();
 		return super.performOk();
 	}
 

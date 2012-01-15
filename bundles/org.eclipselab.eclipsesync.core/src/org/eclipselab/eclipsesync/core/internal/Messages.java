@@ -11,6 +11,10 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipselab.eclipsesync.core.internal.messages"; //$NON-NLS-1$
+	public static String EclipseSync_CancelByUser;
+	public static String EclipseSync_JobName;
+	public static String EclipseSync_NoTask;
+	public static String EclipseSync_SyncReport;
 	public static String FileStorage_FailCreateNode;
 	public static String FileStorage_IllegalNode;
 	public static String FileStorage_MissRootFolder;

@@ -8,6 +8,6 @@ Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipselab.eclipsesync.core.internal.Activator
 Require-Bundle: org.eclipse.core.runtime
 Export-Package: org.eclipselab.eclipsesync.core;version="1.0.0",
- org.eclipselab.eclipsesync.core.internal;x-friends:="org.eclipselab.eclipsesync.tests"
+ org.eclipselab.eclipsesync.core.internal;x-friends:="org.eclipselab.eclipsesync.tests,org.eclipselab.eclipsesync.ui"
 Bundle-ClassPath: .
-Service-Component: OSGI-INF/filestorage.xml
+Service-Component: OSGI-INF/filestorage.xml, OSGI-INF/eclipsesync.xml

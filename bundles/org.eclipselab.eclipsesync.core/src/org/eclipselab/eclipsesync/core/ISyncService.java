@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Eclipselab Eclipse Sync and others.
+ * Copyright (c) 2011, 2012 Eclipselab Eclipse Sync and others.
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,13 +7,15 @@
  */
 package org.eclipselab.eclipsesync.core;
 
+import java.util.Map;
+
 public interface ISyncService {
 
 	/**
 	 * Get the available storage services.
-	 * @return the array of available storage services
+	 * @return the map of available storage services and their id
 	 */
-	public ISyncStorage[] getStorages();
+	public Map<String, ISyncStorage> getStorages();
 
 	/**
 	 * Schedule the synchronizing tasks with given interval.

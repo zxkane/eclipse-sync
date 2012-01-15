@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="Eclipse sync service">
+   <implementation class="org.eclipselab.eclipsesync.core.internal.EclipseSync"/>
+   <service>
+      <provide interface="org.eclipselab.eclipsesync.core.ISyncService"/>
+   </service>
+</scr:component>
