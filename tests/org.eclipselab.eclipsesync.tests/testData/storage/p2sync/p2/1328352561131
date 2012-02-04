@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?p2f version='1.0.0'?>
+<p2f version='1.0.0'>
+  <ius size='3'>
+    <iu id='org.eclipse.pde.api.tools.ee.fragments.feature.group' name='PDE/API Tools Environment Descriptions' version='1.0.200.r37x_v20110803-7D-FHkFAFkNZZO9PfBZStN'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/eclipse/updates/3.7'/>
+        <repository location='http://download.eclipse.org/releases/indigo'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.epp.mpc.feature.group' name='Marketplace Client' version='1.1.1.I20110907-0947'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/indigo'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.sdk.ide' name='Eclipse SDK' version='3.7.1.M20110909-1335'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/eclipse/updates/3.7'/>
+        <repository location='http://download.eclipse.org/releases/indigo'/>
+      </repositories>
+    </iu>
+  </ius>
+</p2f>

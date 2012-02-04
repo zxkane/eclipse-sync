@@ -21,14 +21,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.equinox.internal.p2.core.helpers.ServiceHelper;
+import org.eclipse.equinox.internal.p2.importexport.IUDetail;
 import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
+import org.eclipse.equinox.p2.metadata.IInstallableUnit;
 import org.eclipse.equinox.p2.query.QueryUtil;
 import org.eclipse.equinox.p2.repository.IRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
@@ -45,6 +50,32 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceRegistration;
 
 public class P2SyncTest extends AbstractTestServerClientCase {
+
+	@Test public void testComputing() throws BundleException, StorageException, IOException {
+		File tempFolder = new File(getTempFolder(), "p2Sync"); //$NON-NLS-1$
+		tempFolder.mkdirs();
+		File testData = getTestData("0.1", "testData/p2/SDK371");  //$NON-NLS-1$//$NON-NLS-2$
+		copy("0.15", testData, tempFolder); //$NON-NLS-1$
+		File storageData = getTestData("0.2", "testData/storage/p2sync");  //$NON-NLS-1$//$NON-NLS-2$
+		ServiceRegistration reg = mockLocationService(tempFolder);
+		try {
+			FileStorage storage = new FileStorage();
+			storage.setStorageLocation(storageData);
+			IStorageNode p2Node = storage.getNode(P2Sync.STORAGE_NODE, null);
+			assertNotNull("0.3", p2Node); //$NON-NLS-1$
+			ISyncTask p2Task = (ISyncTask) ServiceHelper.getService(Activator.getContext(), ISyncTask.class.getName(), "(type=p2)");  //$NON-NLS-1$
+			assertNotNull("0.4", p2Task); //$NON-NLS-1$
+			Set<IUDetail> theInstalledIUDetailsFromStorage = ((P2Sync)p2Task).loadIUDetailFromStorage(p2Node, new NullProgressMonitor());
+			List<IUDetail> deltaToBeInstalledFeatures = new ArrayList<IUDetail>();
+			List<IInstallableUnit> deltaToBeSyncFeatures = new ArrayList<IInstallableUnit>();
+			((P2Sync)p2Task).computeSyncAndInstallItems(theInstalledIUDetailsFromStorage, deltaToBeInstalledFeatures, deltaToBeSyncFeatures, new NullProgressMonitor());
+			assertEquals("0.5", 0, deltaToBeSyncFeatures.size()); //$NON-NLS-1$
+			assertEquals("0.6", 2, deltaToBeInstalledFeatures.size()); //$NON-NLS-1$
+		} finally {
+			reg.unregister();
+			delete(tempFolder);
+		}
+	}
 
 	@Test public void syncInstalledFeaturesToStorage() throws BundleException, ProvisionException, OperationCanceledException, StorageException {
 		File tempFolder = new File(getTempFolder(), "p2Sync"); //$NON-NLS-1$

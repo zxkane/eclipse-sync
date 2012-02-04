@@ -80,64 +80,17 @@ public class P2Sync implements ISyncTask {
 	public IStatus perform(ISyncStorage storage, IProgressMonitor monitor) {
 		if (storage == null)
 			throw new IllegalArgumentException(Messages.P2Sync_StorageInvalid);
-		SubMonitor submonitor = SubMonitor.convert(monitor, Messages.P2Sync_TaskName, 1000);
-		IProfileRegistry registry = (IProfileRegistry) provisioningAgent.getService(IProfileRegistry.SERVICE_NAME);
-		IProfile currentProfile = registry.getProfile(IProfileRegistry.SELF);		
+		SubMonitor submonitor = SubMonitor.convert(monitor, Messages.P2Sync_TaskName, 1000);	
 		IStatus status = new Status(IStatus.OK, BUNDLE_ID, Messages.P2Sync_AllInSync);
 		try {
 			SubMonitor loadingProgress = submonitor.newChild(200, SubMonitor.SUPPRESS_ALL_LABELS);
-			IStorageNode p2Node = storage.getNode(STORAGE_NODE, null);
-			Set<IUDetail> theInstalledIUDetails = new HashSet<IUDetail>();
-			if (p2Node != null) {
-				String[] nodeNames = p2Node.listConfigs();
-				if (nodeNames.length > 0) {
-					loadingProgress.setWorkRemaining(nodeNames.length);
-				} else
-					loadingProgress.setWorkRemaining(1).worked(1);
-				for (String nodeName : nodeNames) {
-					InputStream input = null;
-					try {
-						input = p2Node.load(nodeName);
-						theInstalledIUDetails.addAll(importExportService.importP2F(input));
-						loadingProgress.worked(1);
-					} finally {
-						if (input != null) {
-							try {
-								input.close();
-							} catch (IOException e) {
-								// TODO
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-			} else
-				loadingProgress.setWorkRemaining(1).worked(1);			
-			// compute delta features to be sync to storage or to be installed
-			SubMonitor computingDeltaProgress = submonitor.newChild(100);
-			computingDeltaProgress.setWorkRemaining(1000);
-			IInstallableUnit[] installedFeatures = P2Helper.getAllInstalledIUs(currentProfile, computingDeltaProgress.newChild(500, SubMonitor.SUPPRESS_ALL_LABELS));
+			IStorageNode p2Node = storage.getNode(STORAGE_NODE, null); 
+			Set<IUDetail> theInstalledIUDetailsFromStorage = loadIUDetailFromStorage(p2Node, loadingProgress);
+
+			SubMonitor computingProgress = submonitor.newChild(100, SubMonitor.SUPPRESS_ALL_LABELS);
 			List<IUDetail> deltaToBeInstalledFeatures = new ArrayList<IUDetail>();
-			List<IInstallableUnit> deltaToBeSyncFeatures = new ArrayList<IInstallableUnit>(Arrays.asList(installedFeatures));
-			syncloop : for (IUDetail hasSync : theInstalledIUDetails) {
-				if (!isLatest(hasSync, theInstalledIUDetails))
-					continue;
-				for (Iterator<IInstallableUnit> iter = deltaToBeSyncFeatures.iterator(); iter.hasNext(); ) {
-					IInstallableUnit installedIU = iter.next();
-					if (hasSync.getIU().getId().equals(installedIU)) {
-						int compareValue = hasSync.getIU().compareTo(installedIU);
-						if (compareValue == 0) {
-							iter.remove();
-						} else if (compareValue > 0) {
-							iter.remove();
-							deltaToBeInstalledFeatures.add(hasSync);						
-						} 
-						continue syncloop;
-					}
-				}
-				deltaToBeInstalledFeatures.add(hasSync);
-			}
-			computingDeltaProgress.worked(500);
+			List<IInstallableUnit> deltaToBeSyncFeatures = new ArrayList<IInstallableUnit>();
+			computeSyncAndInstallItems(theInstalledIUDetailsFromStorage, deltaToBeInstalledFeatures, deltaToBeSyncFeatures, computingProgress);
 
 			if (deltaToBeInstalledFeatures.size() == 0 && deltaToBeSyncFeatures.size() == 0) {
 				submonitor.worked(700);
@@ -183,7 +136,7 @@ public class P2Sync implements ISyncTask {
 						installOp.setProvisioningContext(context);
 						status = installOp.resolveModal(installDeltaProgress.newChild(100, SubMonitor.SUPPRESS_ALL_LABELS));
 						if (status.isOK()) {
-							status = installOp.getProvisioningJob(null).run(submonitor.newChild(900, SubMonitor.SUPPRESS_ALL_LABELS));
+							status = installOp.getProvisioningJob(null).run(installDeltaProgress.newChild(600, SubMonitor.SUPPRESS_ALL_LABELS));
 						}
 					}
 				} else 
@@ -196,6 +149,66 @@ public class P2Sync implements ISyncTask {
 		}
 
 		return status;
+	}
+
+	public Set<IUDetail> loadIUDetailFromStorage(IStorageNode p2Node, IProgressMonitor monitor) throws StorageException, IOException {
+		Set<IUDetail> theInstalledIUDetails = new HashSet<IUDetail>();
+		SubMonitor loadingProgress = SubMonitor.convert(monitor, 100);
+		if (p2Node != null) {
+			String[] nodeNames = p2Node.listConfigs();
+			if (nodeNames.length > 0) {
+				loadingProgress.setWorkRemaining(nodeNames.length);
+			} else
+				loadingProgress.setWorkRemaining(1).worked(1);
+			for (String nodeName : nodeNames) {
+				InputStream input = null;
+				try {
+					input = p2Node.load(nodeName);
+					theInstalledIUDetails.addAll(importExportService.importP2F(input));
+					loadingProgress.worked(1);
+				} finally {
+					if (input != null) {
+						try {
+							input.close();
+						} catch (IOException e) {
+							// TODO
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		} else
+			loadingProgress.setWorkRemaining(1).worked(1);
+		return theInstalledIUDetails;
+	}
+
+	public void computeSyncAndInstallItems(Set<IUDetail> theInstalledIUDetailsFromStorage, List<IUDetail> deltaToBeInstalledFeatures, List<IInstallableUnit> deltaToBeSyncFeatures, IProgressMonitor monitor) {
+		IProfileRegistry registry = (IProfileRegistry) provisioningAgent.getService(IProfileRegistry.SERVICE_NAME);
+		IProfile currentProfile = registry.getProfile(IProfileRegistry.SELF);
+
+		// compute delta features to be sync to storage or to be installed
+		SubMonitor computingDeltaProgress = SubMonitor.convert(monitor, 1000);
+		IInstallableUnit[] installedFeatures = P2Helper.getAllInstalledIUs(currentProfile, computingDeltaProgress.newChild(500, SubMonitor.SUPPRESS_ALL_LABELS));
+		deltaToBeSyncFeatures.addAll(Arrays.asList(installedFeatures));
+		syncloop : for (IUDetail hasSync : theInstalledIUDetailsFromStorage) {
+			if (!isLatest(hasSync, theInstalledIUDetailsFromStorage))
+				continue;
+			for (Iterator<IInstallableUnit> iter = deltaToBeSyncFeatures.iterator(); iter.hasNext(); ) {
+				IInstallableUnit installedIU = iter.next();
+				if (hasSync.getIU().getId().equals(installedIU.getId())) {
+					int compareValue = hasSync.getIU().compareTo(installedIU);
+					if (compareValue == 0) {
+						iter.remove();
+					} else if (compareValue > 0) {
+						iter.remove();
+						deltaToBeInstalledFeatures.add(hasSync);						
+					} 
+					continue syncloop;
+				}
+			}
+			deltaToBeInstalledFeatures.add(hasSync);
+		}
+		computingDeltaProgress.worked(500);
 	}
 
 	private boolean isLatest(IUDetail iuDetail, Set<IUDetail> details) {

@@ -15,3 +15,4 @@ Require-Bundle: org.eclipselab.eclipsesync.core;bundle-version="0.1.0",
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipselab.eclipsesync.tests.Activator
 Bundle-ClassPath: .
+Import-Package: org.eclipse.equinox.internal.p2.importexport;version="1.3.0"
