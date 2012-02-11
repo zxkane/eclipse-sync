@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho-version>0.13.0</tycho-version>
+		<tycho-version>0.14.0</tycho-version>
 		<eclipse-sync-version>0.1.0</eclipse-sync-version>
 		<indigo-p2-repository>
 			http://download.eclipse.org/releases/indigo
@@ -49,7 +49,9 @@
 		<module>../bundles/org.eclipselab.eclipsesync.ui</module>
 		<module>../tests/org.eclipselab.eclipsesync.testserver</module>
 		<module>../tests/org.eclipselab.eclipsesync.tests</module>
+		<module>../features/org.eclipselab.eclipsesync.licensefeature</module>
 		<module>../features/org.eclipselab.eclipsesync.feature</module>
+		<module>repository</module>
 	</modules>
 
 	<build>
@@ -94,4 +96,11 @@
 		<connection>git</connection>
 		<url>https://kane.mx@code.google.com/a/eclipselabs.org/p/eclipse-sync/ </url>
 	</scm>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>tycho-0.14.0-staged</id>
+			<url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-004/</url>
+		</pluginRepository>
+	</pluginRepositories>
 </project>

@@ -7,11 +7,11 @@
 		<artifactId>org.eclipselab.eclipsesync.parent</artifactId>
 		<groupId>org.eclipselab</groupId>
 		<version>0.1.0-SNAPSHOT</version>
-		<relativePath>../../releng</relativePath>
+		<relativePath>../</relativePath>
 	</parent>
 	<groupId>org.eclipselab</groupId>
-	<artifactId>org.eclipselab.eclipsesync.feature</artifactId>
+	<artifactId>org.eclipselab.eclipsesync.repository</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
-	<packaging>eclipse-feature</packaging>
+	<packaging>eclipse-repository</packaging>
 
 </project>
