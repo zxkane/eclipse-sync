@@ -3,6 +3,9 @@
    <feature url="features/org.eclipselab.eclipsesync.feature_0.1.0.qualifier.jar" id="org.eclipselab.eclipsesync.feature" version="0.1.0.qualifier">
       <category name="org.eclipselab.eclipsesync.category"/>
    </feature>
+   <feature url="features/org.eclipselab.eclipsesync.dropbox.feature_0.1.0.qualifier.jar" id="org.eclipselab.eclipsesync.dropbox.feature" version="0.1.0.qualifier">
+      <category name="org.eclipselab.eclipsesync.category"/>
+   </feature>
    <category-def name="org.eclipselab.eclipsesync.category" label="Eclipse Sync">
       <description>
          The Eclipse Sync catagory contains components of Eclipse sync.

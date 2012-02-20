@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipselab.eclipsesync.dropbox.feature"
+      label="Eclipse Sync - Dropbox storage(Optional)"
+      version="0.1.0.qualifier"
+      license-feature="org.eclipselab.eclipsesync.licensefeature"
+      license-feature-version="1.0.0.qualifier">
+
+   <description>
+      Cloud storage Dropbox for Eclipse Sync
+   </description>
+
+   <includes
+         id="org.eclipselab.eclipsesync.feature"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.dropbox.sdk"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipselab.eclipsesync.storage.dropbox"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

@@ -9,6 +9,7 @@ package org.eclipselab.eclipsesync.tests;
 
 import org.eclipselab.eclipsesync.tests.p2.P2HelperTests;
 import org.eclipselab.eclipsesync.tests.p2.P2SyncTest;
+import org.eclipselab.eclipsesync.tests.storage.DropboxStorageTest;
 import org.eclipselab.eclipsesync.tests.storage.FileStorageTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -16,7 +17,8 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({P2HelperTests.class,
 	FileStorageTest.class,
-	P2SyncTest.class})
+	P2SyncTest.class,
+	DropboxStorageTest.class})
 public class AllTest {
 	//
 }

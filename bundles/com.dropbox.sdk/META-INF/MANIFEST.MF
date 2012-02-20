@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Dropbox Java SDK
+Bundle-SymbolicName: com.dropbox.sdk
+Bundle-Version: 1.2.3
+Bundle-Vendor: Dropbox
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Eclipse-BundleShape: dir
+Bundle-ClassPath: lib/commons-logging-1.1.1.jar,
+ lib/dropbox-java-sdk-1.2.3.jar,
+ lib/httpclient-4.0.3.jar,
+ lib/httpcore-4.0.1.jar,
+ lib/httpmime-4.0.3.jar,
+ lib/json_simple-1.1.jar,
+ .
+Export-Package: com.dropbox.client2;version="1.2.3",
+ com.dropbox.client2.exception;version="1.2.3",
+ com.dropbox.client2.session;version="1.2.3"

@@ -14,8 +14,13 @@ public class StorageException extends Exception {
 	public static final int StorageIllegalArgument = 0x04;
 	public static final int StorageNodeExisting = 0x08;
 	public static final int StorageIOException = 0x10;
+	public static final int UnkonwnException = 0x11;
+	public static final int AuthenticationFailure = 0x12;
+	public static final int OverQuota = 0x14;
+	public static final int NodeNotExist = 0x18;
 
 	private static final long serialVersionUID = 4751716513296093654L;
+
 	private int type;
 
 	public StorageException(int type, String message, Throwable throwable) {

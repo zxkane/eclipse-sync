@@ -47,10 +47,13 @@
 		<module>../bundles/org.eclipselab.eclipsesync.core</module>
 		<module>../bundles/org.eclipselab.eclipsesync.p2</module>
 		<module>../bundles/org.eclipselab.eclipsesync.ui</module>
+		<module>../bundles/com.dropbox.sdk</module>		
+		<module>../bundles/org.eclipselab.eclipsesync.storage.dropbox</module>
 		<module>../tests/org.eclipselab.eclipsesync.testserver</module>
 		<module>../tests/org.eclipselab.eclipsesync.tests</module>
 		<module>../features/org.eclipselab.eclipsesync.licensefeature</module>
 		<module>../features/org.eclipselab.eclipsesync.feature</module>
+		<module>../features/org.eclipselab.eclipsesync.dropbox.feature</module>
 		<module>repository</module>
 	</modules>
 
@@ -97,10 +100,4 @@
 		<url>https://kane.mx@code.google.com/a/eclipselabs.org/p/eclipse-sync/ </url>
 	</scm>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>tycho-0.14.0-staged</id>
-			<url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-004/</url>
-		</pluginRepository>
-	</pluginRepositories>
 </project>

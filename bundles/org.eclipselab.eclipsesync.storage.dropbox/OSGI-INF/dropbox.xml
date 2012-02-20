@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="Dropbox Storage">
+   <implementation class="org.eclipselab.eclipsesync.storage.dropbox.DropboxStorage"/>
+   <service>
+      <provide interface="org.eclipselab.eclipsesync.core.ISyncStorage"/>
+   </service>
+   <property name="id" type="String" value="dropbox"/>
+   <property name="name" type="String" value="Dropbox Storage"/>
+   <property name="description" type="String" value="Storage based on cloud service Dropbox."/>
+</scr:component>

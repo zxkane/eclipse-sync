@@ -11,8 +11,12 @@ Require-Bundle: org.eclipselab.eclipsesync.core;bundle-version="0.1.0",
  org.eclipse.equinox.p2.engine;bundle-version="2.1.0",
  org.eclipse.equinox.p2.metadata;bundle-version="2.1.0",
  org.eclipselab.eclipsesync.p2;bundle-version="0.1.0",
- org.eclipse.equinox.p2.repository;bundle-version="2.1.0"
+ org.eclipse.equinox.p2.repository;bundle-version="2.1.0",
+ org.eclipselab.eclipsesync.storage.dropbox;bundle-version="0.1.0"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipselab.eclipsesync.tests.Activator
 Bundle-ClassPath: .
-Import-Package: org.eclipse.equinox.internal.p2.importexport;version="1.3.0"
+Import-Package: com.dropbox.client2;version="1.2.3",
+ com.dropbox.client2.exception;version="1.2.3",
+ com.dropbox.client2.session;version="1.2.3",
+ org.eclipse.equinox.internal.p2.importexport;version="1.3.0"

@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.equinox.internal.p2.core.helpers.FileUtils;
@@ -44,6 +45,7 @@ import org.eclipselab.eclipsesync.core.ISyncStorage;
 import org.eclipselab.eclipsesync.core.ISyncTask;
 import org.eclipselab.eclipsesync.core.StorageException;
 import org.eclipselab.eclipsesync.p2.utils.P2Helper;
+import org.osgi.framework.BundleContext;
 
 public class P2Sync implements ISyncTask {
 
@@ -51,6 +53,11 @@ public class P2Sync implements ISyncTask {
 	public static final String STORAGE_NODE = "p2"; //$NON-NLS-1$
 	private P2ImportExport importExportService;
 	private IProvisioningAgent provisioningAgent;
+	private BundleContext bundleContext;
+
+	public void active(BundleContext context) {
+		this.bundleContext = context;
+	}
 
 	public void bindImportExportService(P2ImportExport service) {
 		this.importExportService = service;
@@ -107,10 +114,13 @@ public class P2Sync implements ISyncTask {
 						p2Node = storage.createNode(STORAGE_NODE, null);
 					}
 					status = exportDeltaToStorage(p2Node, submonitor.newChild(syncWight), deltaToBeSyncFeatures.toArray(new IInstallableUnit[deltaToBeSyncFeatures.size()]));
+					if (status.matches(IStatus.INFO)) {
+						logInfoStatus(status);
+					}
 				}
 
 				if (deltaToBeInstalledFeatures.size() > 0) {
-					if (status.isOK()) {
+					if (status.isOK() || status.matches(IStatus.INFO)) {
 						SubMonitor installDeltaProgress = submonitor.newChild(installWight);
 						installDeltaProgress.setWorkRemaining(1000);
 						List<IInstallableUnit> units = new ArrayList<IInstallableUnit>(deltaToBeInstalledFeatures.size());
@@ -149,6 +159,15 @@ public class P2Sync implements ISyncTask {
 		}
 
 		return status;
+	}
+
+	private void logInfoStatus(IStatus status) {
+		if (status.isMultiStatus()) {
+			for (IStatus child : status.getChildren())
+				logInfoStatus(child);
+		} else if (status.matches(IStatus.INFO)) {
+			Platform.getLog(bundleContext.getBundle()).log(status);
+		}
 	}
 
 	public Set<IUDetail> loadIUDetailFromStorage(IStorageNode p2Node, IProgressMonitor monitor) throws StorageException, IOException {
@@ -225,7 +244,7 @@ public class P2Sync implements ISyncTask {
 			IProgressMonitor monitor, IInstallableUnit[] installedFeatures) {
 		ByteArrayOutputStream memoryOut = new ByteArrayOutputStream();
 		IStatus status = importExportService.exportP2F(memoryOut, installedFeatures, monitor);
-		if (status.isOK()) {
+		if (status.isOK() || status.matches(IStatus.INFO)) {
 			try {
 				// use time stamp as the name of node
 				OutputStream stream = new BufferedOutputStream(p2Node.getStore(String.valueOf(new Date().getTime()))); 

@@ -27,6 +27,7 @@ public interface IStorageNode {
 	/**
 	 * List the configurations
 	 * @return	the name of existing configurations
+	 * @throws StorageException 
 	 */
-	public String[] listConfigs();
+	public String[] listConfigs() throws StorageException;
 }
