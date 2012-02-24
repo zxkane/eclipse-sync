@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="File Storage Preference Options">
+   <implementation class="org.eclipselab.eclipsesync.ui.storage.FileStoragePrefOptions"/>
+   <property name="id" type="String" value="filesystem"/>
+   <service>
+      <provide interface="org.eclipselab.eclipsesync.ui.IPreferenceOptions"/>
+   </service>
+</scr:component>

@@ -10,3 +10,5 @@ Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipselab.eclipsesync.ui.preferences.Activator
 Import-Package: org.eclipselab.eclipsesync.core;version="1.0.0",
  org.eclipselab.eclipsesync.core.internal
+Export-Package: org.eclipselab.eclipsesync.ui;version="1.0.0"
+Service-Component: OSGI-INF/filePrefOptions.xml

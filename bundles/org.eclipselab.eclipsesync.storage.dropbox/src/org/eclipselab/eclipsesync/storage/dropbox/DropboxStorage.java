@@ -14,20 +14,28 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipselab.eclipsesync.core.IStorageNode;
 import org.eclipselab.eclipsesync.core.ISyncStorage;
 import org.eclipselab.eclipsesync.core.StorageException;
+import org.eclipselab.eclipsesync.ui.IPreferenceOptions;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.DropboxFileInfo;
@@ -43,7 +51,7 @@ import com.dropbox.client2.session.RequestTokenPair;
 import com.dropbox.client2.session.Session.AccessType;
 import com.dropbox.client2.session.WebAuthSession;
 
-public class DropboxStorage implements ISyncStorage {
+public class DropboxStorage implements ISyncStorage, IPreferenceOptions {
 
 	public static final String SEPARATOR = "/"; //$NON-NLS-1$
 
@@ -63,10 +71,10 @@ public class DropboxStorage implements ISyncStorage {
 			try {
 				DropboxFileInfo fileInfo = dropboxApi.getFile(path, null, outputStream, null);
 				if (fileInfo.getMetadata().isDeleted)
-					throw new StorageException(StorageException.ConfigNotFound, "Config doesn't exist.", null); //$NON-NLS-1$
+					throw new StorageException(StorageException.ConfigNotFound, Messages.DropboxStorage_ConfigNotExist, null);
 				return new ByteArrayInputStream(outputStream.toByteArray());
 			} catch (DropboxUnlinkedException e) {
-				throw new StorageException(StorageException.AuthenticationFailure, e.getMessage(), e);
+				throw new StorageException(StorageException.AuthenticationFailure, Messages.DropboxStorage_AuthFailed, e);
 			} catch (DropboxServerException e) {
 				if (e.error == DropboxServerException._404_NOT_FOUND)
 					throw new StorageException(StorageException.ConfigNotFound, e.getMessage(), e);
@@ -87,7 +95,7 @@ public class DropboxStorage implements ISyncStorage {
 				Entry existingEntry = dropboxApi.metadata(path, 1, null, false, null);
 				parentRev = existingEntry.rev;
 			} catch (DropboxUnlinkedException e) {
-				throw new StorageException(StorageException.AuthenticationFailure, e.getMessage(), e);
+				throw new StorageException(StorageException.AuthenticationFailure, Messages.DropboxStorage_AuthFailed, e);
 			} catch (DropboxException e) {
 				// do nothing
 			}
@@ -118,7 +126,7 @@ public class DropboxStorage implements ISyncStorage {
 				}
 				return configs.toArray(new String[configs.size()]);
 			} catch (DropboxUnlinkedException e) {
-				throw new StorageException(StorageException.AuthenticationFailure, e.getMessage(), e);
+				throw new StorageException(StorageException.AuthenticationFailure, Messages.DropboxStorage_AuthFailed, e);
 			} catch (DropboxIOException e) {
 				throw new StorageException(StorageException.StorageIOException, e.getMessage(), e);
 			} catch (DropboxException e) {
@@ -137,8 +145,8 @@ public class DropboxStorage implements ISyncStorage {
 	final static private AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
 	private final static String TOKEN = "token"; //$NON-NLS-1$
 	private final static String SECRET = "secret"; //$NON-NLS-1$
-	private String token = null;
-	private String secret = null;
+	String token = null;
+	String secret = null;
 
 	// In the class declaration section:
 	DropboxAPI<WebAuthSession> dropboxApi;
@@ -154,7 +162,7 @@ public class DropboxStorage implements ISyncStorage {
 		}
 	}
 
-	private ISecurePreferences getPreferenceNode() {
+	ISecurePreferences getPreferenceNode() {
 		ISecurePreferences prefs = SecurePreferencesFactory.getDefault();
 		ISecurePreferences node = prefs.node(Activator.ID);
 		return node;
@@ -175,7 +183,7 @@ public class DropboxStorage implements ISyncStorage {
 		try {
 			authentication();
 		} catch (DropboxException e) {
-			throw new StorageException(StorageException.StorageIOException, e.getMessage(), e);
+			throw new StorageException(StorageException.AuthenticationFailure, Messages.DropboxStorage_AuthFailed, e);
 		}
 		String nodePath = SEPARATOR + nodeId; 
 		if (parent != null) {
@@ -188,7 +196,7 @@ public class DropboxStorage implements ISyncStorage {
 		try {
 			direntry = dropboxApi.metadata(nodePath, 0, null, false, null); 
 		} catch (DropboxUnlinkedException e) {
-			throw new StorageException(StorageException.AuthenticationFailure, e.getMessage(), e);
+			throw new StorageException(StorageException.AuthenticationFailure, Messages.DropboxStorage_AuthFailed, e);
 		} catch (DropboxServerException e) {
 			if (e.error == DropboxServerException._404_NOT_FOUND) {
 				return null;
@@ -211,7 +219,7 @@ public class DropboxStorage implements ISyncStorage {
 		try {
 			authentication();
 		} catch (DropboxException e) {
-			throw new StorageException(StorageException.StorageIOException, e.getMessage(), e);
+			throw new StorageException(StorageException.AuthenticationFailure, Messages.DropboxStorage_AuthFailed, e);
 		}
 		String nodePath = SEPARATOR + nodeId; 
 		if (parent != null) {
@@ -226,7 +234,7 @@ public class DropboxStorage implements ISyncStorage {
 			if (direntry.isDeleted)
 				direntry = createDir(nodePath);
 		} catch (DropboxUnlinkedException e) {
-			throw new StorageException(StorageException.AuthenticationFailure, e.getMessage(), e);
+			throw new StorageException(StorageException.AuthenticationFailure, Messages.DropboxStorage_AuthFailed, e);
 		} catch (DropboxServerException e) {
 			if (e.error == DropboxServerException._404_NOT_FOUND) {
 				direntry = createDir(nodePath);
@@ -246,7 +254,7 @@ public class DropboxStorage implements ISyncStorage {
 		try {
 			return dropboxApi.createFolder(nodePath);
 		} catch (DropboxUnlinkedException e1) {
-			throw new StorageException(StorageException.AuthenticationFailure, e1.getMessage(), e1);
+			throw new StorageException(StorageException.AuthenticationFailure, Messages.DropboxStorage_AuthFailed, e1);
 		}  catch (DropboxServerException e1) {
 			if (e1.error == DropboxServerException._507_INSUFFICIENT_STORAGE) {
 				throw new StorageException(StorageException.OverQuota, e1.getMessage(), e1);
@@ -265,7 +273,7 @@ public class DropboxStorage implements ISyncStorage {
 		try {
 			authentication();
 		} catch (DropboxException e) {
-			throw new StorageException(StorageException.StorageIOException, e.getMessage(), e);
+			throw new StorageException(StorageException.AuthenticationFailure, Messages.DropboxStorage_AuthFailed, e);
 		}
 		String nodePath = SEPARATOR + nodeId; 
 		if (parent != null) {
@@ -277,7 +285,7 @@ public class DropboxStorage implements ISyncStorage {
 		try {
 			dropboxApi.delete(nodePath);
 		}catch (DropboxUnlinkedException e) {
-			throw new StorageException(StorageException.AuthenticationFailure, e.getMessage(), e);
+			throw new StorageException(StorageException.AuthenticationFailure, Messages.DropboxStorage_AuthFailed, e);
 		} catch (DropboxServerException e) {
 			if (e.error == DropboxServerException._404_NOT_FOUND) {
 				throw new StorageException(StorageException.NodeNotExist, e.getMessage(), e);
@@ -306,37 +314,62 @@ public class DropboxStorage implements ISyncStorage {
 	}
 
 	private void initialAuthentication(WebAuthSession session) throws DropboxException {
-		Display display = Display.getDefault();
-		final Shell shell = new Shell(Display.getDefault());
-		shell.setLayout(new FillLayout(SWT.HORIZONTAL | SWT.VERTICAL));
-		final String oauthURL = dropboxApi.getSession().getAuthInfo().url;
-		int style = SWT.MOZILLA | SWT.WEBKIT;
-		if (Platform.OS_WIN32.equals(Platform.getOS()))
-			style = SWT.NONE;
-		Browser browser = new Browser(shell, style);
-		browser.addLocationListener(new LocationListener() {
-			boolean entering = false;
-			public void changing(LocationEvent event) {
-				// do nothing
-			}
+		final CountDownLatch latch = new CountDownLatch(1);
 
-			public void changed(LocationEvent event) {
-				System.out.println(event.location);
-				if (oauthURL.equals(event.location))
-					entering = true;
-				if ("https://www.dropbox.com/1/oauth/authorize".equals(event.location) ||  entering) //$NON-NLS-1$
-					shell.close();
-			}
-		});
+		class OAuthRunnable implements Runnable {
+			DropboxException dropboxException;
+			Shell browserShell; 
 
-		browser.setUrl(oauthURL);
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				// If no more entries in event queue
-				display.sleep();
+			public void run() {
+				try {
+					Display display = Display.getDefault();
+					browserShell = new Shell(display, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM);
+					browserShell.setLayout(new FillLayout(SWT.HORIZONTAL | SWT.VERTICAL));
+					try {
+						final String oauthURL = dropboxApi.getSession().getAuthInfo().url;
+						int style = SWT.MOZILLA | SWT.WEBKIT;
+						if (Platform.OS_WIN32.equals(Platform.getOS()))
+							style = SWT.NONE;
+						Browser browser = new Browser(browserShell, style);
+						browser.addLocationListener(new LocationListener() {
+							boolean entering = false;
+							public void changing(LocationEvent event) {
+								// do nothing
+							}
+
+							public void changed(LocationEvent event) {
+								if (oauthURL.equals(event.location))
+									entering = true;
+								if ("https://www.dropbox.com/1/oauth/authorize".equals(event.location) ||  entering) //$NON-NLS-1$
+									browserShell.close();
+							}
+						});
+
+						browser.setUrl(oauthURL);
+					} catch (DropboxException e) {
+						dropboxException = e;
+						return;
+					}
+					browserShell.open();
+				} finally {
+					latch.countDown();
+				}
 			}
 		}
+
+		OAuthRunnable oAuthRunnable = new OAuthRunnable();
+		Display.getDefault().syncExec(oAuthRunnable);		
+		while (!oAuthRunnable.browserShell.isDisposed()) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if (oAuthRunnable.dropboxException != null)
+			throw oAuthRunnable.dropboxException;
+
 		AccessTokenPair tokenPair = dropboxApi.getSession().getAccessTokenPair();
 		// wait for user to allow app in above URL, 
 		// then return back to executing code below
@@ -354,5 +387,48 @@ public class DropboxStorage implements ISyncStorage {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void createOptions(final Composite control, ISyncStorage storage, IPreferenceStore store) {
+		control.setLayout(new FillLayout());
+		final Link unlinkDrop = new Link(control, SWT.NONE);
+		unlinkDrop.setText(Messages.DropboxPreference_LinkText);
+		unlinkDrop.setData("state", Boolean.TRUE); //$NON-NLS-1$
+		if (token == null || secret == null) {
+			disableLink(unlinkDrop);
+		}
+
+		unlinkDrop.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (MessageDialog.openConfirm(control.getShell(), Messages.DropboxPreference_ConfirmDialogTitle, Messages.DropboxPreference_ConfirmDialogMessage)) {
+					disableLink(unlinkDrop);
+					token = null;
+					secret = null;
+					ISecurePreferences node = getPreferenceNode();
+					try {
+						node.remove(TOKEN);
+						node.remove(SECRET);
+					} catch (IllegalStateException exception) {
+						// do nothing
+					}
+					disableLink(unlinkDrop);
+				}
+			}
+		});
+	}
+
+	void disableLink(Link unlinkDrop) {
+		unlinkDrop.setEnabled(false);
+		unlinkDrop.setData("disable", new Boolean(false)); //$NON-NLS-1$
+		unlinkDrop.setData("state", Boolean.FALSE); //$NON-NLS-1$
+	}
+
+	public boolean performOk() {
+		return true;
+	}
+
+	public boolean performDefaults() {
+		return true;
 	}
 }

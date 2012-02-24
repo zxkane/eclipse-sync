@@ -3,6 +3,7 @@
    <implementation class="org.eclipselab.eclipsesync.storage.dropbox.DropboxStorage"/>
    <service>
       <provide interface="org.eclipselab.eclipsesync.core.ISyncStorage"/>
+      <provide interface="org.eclipselab.eclipsesync.ui.IPreferenceOptions"/>
    </service>
    <property name="id" type="String" value="dropbox"/>
    <property name="name" type="String" value="Dropbox Storage"/>

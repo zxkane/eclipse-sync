@@ -11,8 +11,13 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipselab.eclipsesync.storage.dropbox.messages"; //$NON-NLS-1$
+	public static String DropboxPreference_ConfirmDialogMessage;
+	public static String DropboxPreference_ConfirmDialogTitle;
+	public static String DropboxPreference_LinkText;
 	public static String DropboxStorage_AppKey;
 	public static String DropboxStorage_AppSecret;
+	public static String DropboxStorage_AuthFailed;
+	public static String DropboxStorage_ConfigNotExist;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
