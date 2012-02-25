@@ -12,11 +12,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -36,6 +47,7 @@ import org.eclipselab.eclipsesync.core.IStorageNode;
 import org.eclipselab.eclipsesync.core.ISyncStorage;
 import org.eclipselab.eclipsesync.core.StorageException;
 import org.eclipselab.eclipsesync.ui.IPreferenceOptions;
+import org.osgi.framework.wiring.BundleWiring;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.DropboxFileInfo;
@@ -140,8 +152,8 @@ public class DropboxStorage implements ISyncStorage, IPreferenceOptions {
 
 	}
 
-	final static private String APP_KEY = Messages.DropboxStorage_AppKey;
-	final static private String APP_SECRET = Messages.DropboxStorage_AppSecret;
+	static private String APP_KEY = Messages.DropboxStorage_AppKey;
+	static private String APP_SECRET = Messages.DropboxStorage_AppSecret;
 	final static private AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
 	private final static String TOKEN = "token"; //$NON-NLS-1$
 	private final static String SECRET = "secret"; //$NON-NLS-1$
@@ -157,8 +169,46 @@ public class DropboxStorage implements ISyncStorage, IPreferenceOptions {
 			token = node.get(TOKEN, null);
 			secret = node.get(SECRET, null);
 		} catch (org.eclipse.equinox.security.storage.StorageException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Platform.getLog(Activator.getContext().getBundle()).log(new Status(IStatus.ERROR, Activator.ID,
+					Messages.DropboxStorage_FailGetUserToken, e));
+		}
+		InputStream input = null;
+		try {
+			final BundleWiring wiring = Activator.getContext().getBundle().adapt(BundleWiring.class);
+			List<URL> entries = wiring.findEntries("/", "token", BundleWiring.FINDENTRIES_RECURSE); //$NON-NLS-1$ //$NON-NLS-2$
+			if (entries.size() == 0) {
+				Platform.getLog(Activator.getContext().getBundle()).log(new Status(IStatus.ERROR, Activator.ID,
+						Messages.DropboxStorage_FailGetAppToken, null));
+				return;
+			}
+			input = entries.get(0).openStream();
+			SecretKeySpec keyspec = new SecretKeySpec(APP_KEY.getBytes(), "AES"); //$NON-NLS-1$
+			Cipher cipher = Cipher.getInstance("AES"); //$NON-NLS-1$
+			cipher.init(Cipher.DECRYPT_MODE, keyspec);
+			CipherInputStream aesIn = new CipherInputStream(input, cipher);
+			Properties props = new Properties();
+			props.load(aesIn);
+			APP_KEY = props.getProperty("AppKey"); //$NON-NLS-1$
+			APP_SECRET = props.getProperty("AppSecret"); //$NON-NLS-1$
+		} catch (IOException e) {
+			Platform.getLog(Activator.getContext().getBundle()).log(new Status(IStatus.ERROR, Activator.ID,
+					Messages.DropboxStorage_FailGetAppToken, e));
+		} catch (NoSuchAlgorithmException e) {
+			Platform.getLog(Activator.getContext().getBundle()).log(new Status(IStatus.ERROR, Activator.ID,
+					Messages.DropboxStorage_FailGetAppToken, e));
+		} catch (NoSuchPaddingException e) {
+			Platform.getLog(Activator.getContext().getBundle()).log(new Status(IStatus.ERROR, Activator.ID,
+					Messages.DropboxStorage_FailGetAppToken, e));
+		} catch (InvalidKeyException e) {
+			Platform.getLog(Activator.getContext().getBundle()).log(new Status(IStatus.ERROR, Activator.ID,
+					Messages.DropboxStorage_FailGetAppToken, e));
+		} finally {
+			if (input != null)
+				try {
+					input.close();
+				} catch (IOException e) {
+					//
+				}
 		}
 	}
 
@@ -299,6 +349,7 @@ public class DropboxStorage implements ISyncStorage, IPreferenceOptions {
 	}
 
 	private void authentication() throws DropboxException {
+
 		AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
 		WebAuthSession session = new WebAuthSession(appKeys, ACCESS_TYPE);
 		dropboxApi = new DropboxAPI(session);
@@ -324,6 +375,7 @@ public class DropboxStorage implements ISyncStorage, IPreferenceOptions {
 				try {
 					Display display = Display.getDefault();
 					browserShell = new Shell(display, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM);
+					browserShell.setText(Messages.DropboxStorage_OAuthTitle);
 					browserShell.setLayout(new FillLayout(SWT.HORIZONTAL | SWT.VERTICAL));
 					try {
 						final String oauthURL = dropboxApi.getSession().getAuthInfo().url;
@@ -363,8 +415,7 @@ public class DropboxStorage implements ISyncStorage, IPreferenceOptions {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// 
 			}
 		}
 		if (oAuthRunnable.dropboxException != null)
@@ -384,8 +435,8 @@ public class DropboxStorage implements ISyncStorage, IPreferenceOptions {
 			node.put(TOKEN, token, true);
 			node.put(SECRET, secret, true);
 		} catch (org.eclipse.equinox.security.storage.StorageException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Platform.getLog(Activator.getContext().getBundle()).log(new Status(IStatus.ERROR, Activator.ID,
+					Messages.DropboxStorage_FailSaveUserToken, e));
 		}
 	}
 

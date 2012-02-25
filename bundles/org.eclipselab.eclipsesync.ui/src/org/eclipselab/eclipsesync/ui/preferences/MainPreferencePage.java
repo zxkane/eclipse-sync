@@ -111,7 +111,8 @@ public class MainPreferencePage extends PreferencePage implements IWorkbenchPref
 			});
 			if (i == 1) {
 				radio.setSelection(true);
-			}
+			} else
+				radio.setSelection(false);
 
 			IPreferenceOptions prefOptions = getPreferenceOptions(NLS.bind(PREFOPTION_FILTER, propertyId));
 			if (prefOptions != null) {

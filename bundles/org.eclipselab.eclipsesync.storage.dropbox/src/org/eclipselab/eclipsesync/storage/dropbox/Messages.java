@@ -18,6 +18,10 @@ public class Messages extends NLS {
 	public static String DropboxStorage_AppSecret;
 	public static String DropboxStorage_AuthFailed;
 	public static String DropboxStorage_ConfigNotExist;
+	public static String DropboxStorage_FailGetAppToken;
+	public static String DropboxStorage_FailGetUserToken;
+	public static String DropboxStorage_FailSaveUserToken;
+	public static String DropboxStorage_OAuthTitle;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
