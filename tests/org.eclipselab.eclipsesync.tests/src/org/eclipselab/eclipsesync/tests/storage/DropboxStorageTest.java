@@ -22,16 +22,16 @@ import org.eclipselab.eclipsesync.core.IStorageNode;
 import org.eclipselab.eclipsesync.core.StorageException;
 import org.eclipselab.eclipsesync.storage.dropbox.DropboxStorage;
 import org.eclipselab.eclipsesync.storage.dropbox.DropboxStorage.DropboxNode;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DropboxStorageTest {
 
 	private static final String SEPARATOR = DropboxStorage.SEPARATOR;
-	private DropboxStorage storage = null;
+	private static DropboxStorage storage = null;
 
 	// use the existing token and secret to avoid using Browser to manually authenticate
-	@Before public void setUp() throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
+	@BeforeClass public static void setUp() throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
 		storage = new DropboxStorage();
 		if (!Messages.DropboxStorageTest_TestToken.startsWith("${")) { //$NON-NLS-1$
 			mockData(storage, "token", Messages.DropboxStorageTest_TestToken); //$NON-NLS-1$
@@ -39,7 +39,7 @@ public class DropboxStorageTest {
 		}
 	}
 
-	private void mockData(DropboxStorage instance, String fieldName, String fieldValue) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+	private static void mockData(DropboxStorage instance, String fieldName, String fieldValue) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		Field field = instance.getClass().getDeclaredField(fieldName);
 		field.setAccessible(true);
 		field.set(instance, fieldValue);
