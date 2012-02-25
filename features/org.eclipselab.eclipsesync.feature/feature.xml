@@ -3,13 +3,14 @@
       id="org.eclipselab.eclipsesync.feature"
       label="Eclipse Sync Core Feature"
       version="0.1.0.qualifier"
+      plugin="org.eclipselab.eclipsesync.ui"
       license-feature="org.eclipselab.eclipsesync.licensefeature"
       license-feature-version="1.0.0.qualifier">
 
    <description url="https://code.google.com/a/eclipselabs.org/p/eclipse-sync/">
       Eclipse sync core functionality
    </description>
-   
+
    <license url="%licenseURL">
       %license
    </license>
