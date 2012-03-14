@@ -18,7 +18,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -365,47 +364,43 @@ public class DropboxStorage implements ISyncStorage, IPreferenceOptions {
 	}
 
 	private void initialAuthentication(WebAuthSession session) throws DropboxException {
-		final CountDownLatch latch = new CountDownLatch(1);
-
 		class OAuthRunnable implements Runnable {
 			DropboxException dropboxException;
 			Shell browserShell; 
 
 			public void run() {
+				Display display = Display.getDefault();
+				browserShell = new Shell(display, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM);
+				browserShell.setText(Messages.DropboxStorage_OAuthTitle);
+				browserShell.setLayout(new FillLayout(SWT.HORIZONTAL | SWT.VERTICAL));
 				try {
-					Display display = Display.getDefault();
-					browserShell = new Shell(display, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM);
-					browserShell.setText(Messages.DropboxStorage_OAuthTitle);
-					browserShell.setLayout(new FillLayout(SWT.HORIZONTAL | SWT.VERTICAL));
-					try {
-						final String oauthURL = dropboxApi.getSession().getAuthInfo().url;
-						int style = SWT.MOZILLA | SWT.WEBKIT;
-						if (Platform.OS_WIN32.equals(Platform.getOS()))
-							style = SWT.NONE;
-						Browser browser = new Browser(browserShell, style);
-						browser.addLocationListener(new LocationListener() {
-							boolean entering = false;
-							public void changing(LocationEvent event) {
-								// do nothing
-							}
+					final String oauthURL = dropboxApi.getSession().getAuthInfo().url;
+					int style = SWT.MOZILLA | SWT.WEBKIT;
+					if (Platform.OS_WIN32.equals(Platform.getOS()))
+						style = SWT.NONE;
+					Browser browser = new Browser(browserShell, style);
+					browser.addLocationListener(new LocationListener() {
+						boolean entering = false;
+						public void changing(LocationEvent event) {
+							// do nothing
+						}
 
-							public void changed(LocationEvent event) {
-								if (oauthURL.equals(event.location))
-									entering = true;
-								if ("https://www.dropbox.com/1/oauth/authorize".equals(event.location) ||  entering) //$NON-NLS-1$
-									browserShell.close();
-							}
-						});
+						public void changed(LocationEvent event) {
+							if (oauthURL.equals(event.location))
+								entering = true;
+							if ("https://www.dropbox.com/1/oauth/authorize".equals(event.location) ||  entering) //$NON-NLS-1$
+								browserShell.close();
+						}
+					});
 
-						browser.setUrl(oauthURL);
-					} catch (DropboxException e) {
-						dropboxException = e;
-						return;
-					}
-					browserShell.open();
-				} finally {
-					latch.countDown();
+					browser.setUrl(oauthURL);
+				} catch (DropboxException e) {
+					dropboxException = e;
+					if (browserShell != null && !browserShell.isDisposed())
+						browserShell.dispose();
+					return;
 				}
+				browserShell.open();
 			}
 		}
 
@@ -418,6 +413,7 @@ public class DropboxStorage implements ISyncStorage, IPreferenceOptions {
 				// 
 			}
 		}
+
 		if (oAuthRunnable.dropboxException != null)
 			throw oAuthRunnable.dropboxException;
 
